@@ -1,39 +1,57 @@
-#自定义一个类通过__enter__()和__exit__()方法
-# 结合 with语句完成连接和断开数据库的操作
-import pymysql
-
-class MysqlConn(object):
+from redis import *
 
 
-    def __init__(self, host, port, user, password, database, charset):
+class Redis_conn(object):
+    def __init__(self, host, port, db):
         self.host = host
         self.port = port
-        self.user = user
-        self.password = password
-        self.database = database
-        self.charset = charset
+        self.db = db
 
-    def __enter__(self):
-        print('开始执行__enter__()方法')
-        self.conn = pymysql.connect(host = self.host,
-                                    port = self.port,
-                                    user = self.user,
-                                    password = self.password,
-                                    database = self.database,
-                                    charset = self.charset
-        )
-        return self.conn
+    def conn(self):
+        self.rs = StrictRedis(host=self.host,
+                                    port=self.port,
+                                    db=self.db,
+                                    decode_responses=True
+                                    )
+        return self.rs
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        print('开始执行__exit()__方法')
-        self.conn.close()
+    def rs_set(self):
+        try:
+            result = self.rs.set('name','redis')
+            print(result)
+        except Exception as e:
+            print(e)
+
+    def rs_get(self):
+        try:
+            result = self.rs.get('name')
+            print(result)
+        except Exception as e:
+            print(e)
+
+    def rs_modify(self):
+        try:
+            result = self.rs.set('name','哈哈')
+            print(result)
+        except Exception as e:
+            print(e)
+
+    def rs_delete(self):
+        try:
+            result = self.rs.delete('name','redis')
+            print(result)
+        except Exception as e:
+            print(e)
+
+    def __del__(self):
+        print('执行完毕')
 
 
 if __name__ == '__main__':
-    with MysqlConn('192.168.100.100', 3306, 'root', 'mysql', 'stock_db', 'utf8') as conn:
-        cursor = conn.cursor()
-        sql = 'select * from info;'
-        cursor.execute(sql)
-        for row in cursor.fetchall():
-            print(row)
-        cursor.close()
+    redis = Redis_conn('192.168.100.100', 6379, 2)
+    redis.conn()
+    print(redis.host,redis.port,redis.db)
+    redis.rs_set()
+    redis.rs_get()
+    redis.rs_modify()
+    redis.rs_get()
