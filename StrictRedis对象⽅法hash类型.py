@@ -15,24 +15,34 @@ class Redis_conn(object):
                               )
         return self.rs
 
-    # hash用于存储对象key，对象key结构为属性和属性值
+    # hash用于存储对象key，对象key结构为field(属性)和value(属性值)
     # hset key field value
     def rs_add(self):
         try:
             # hmset接收两个参数一个是对象key名，后面的mapping也就是接收类似于字典或者
-            # js对象格式的大括号加键值对{key:value,key1:value1...}
+            # js对象格式的大括号加键值对{field1:value1,field2:value2...}
             result = self.rs.hmset('hash_data', {'name':'peter','age':20})
             print(result)
         except Exception as e:
             print(e)
 
     def rs_get(self):
-        try:
+        try：
             result = self.rs.mget('')
-            # hkey获取hash的对象所有属性
+            #   hkeys获取hash的对象所有属性(field)
+            #   192.168.100.100:6379[2]> help HKEYS  通过redis-cli连接redis数据库help命令查看HKEYSS命令
+            #   HKEYS key
+            #   summary: Get all the fields in a hash   获取hash的key对象中所有的field
+            #   since: 2.0.0
+            #   group: hash
             result = self.rs.hkeys('hash_data')
             print(result)
-            # hvals获取hash的所有对象属性值
+            #   192.168.100.100:6379[2]> help HVALS 通过redis-cli连接redis数据库help命令查看HVALS命令
+            #   HVALS key
+            #   summary: Get all the values in a hash   获取hash的key对象中所有的value值
+            #   since: 2.0.0
+            #   group: hash
+
             result = self.rs.hvals('hash_data')
             print(result)
         except Exception as e:
